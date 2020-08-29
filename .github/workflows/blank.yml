@@ -1,0 +1,18 @@
+name: CI
+
+on: repository_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Update staging version
+        run: |
+          echo $(curl https://api.github.com/repos/fdns/action-hook-target/commits/master | jq -r '.sha') > last_commit
+          git add last_commit
+          git commit -m "Update last_commit"
+          git push "https://fdns:${{ secrets.GITHUB_TOKEN }}@github.com/action-hook-src.git HEAD:master
